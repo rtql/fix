@@ -1,28 +1,22 @@
-module.exports = (req, res) => {
-  const { body } = req;
-
-  if (body === undefined || body === null) {
-    res.status(200).send('No body content provided.');
-    return;
+module.exports = async (req, res) => {
+  const { body, key } = req;
+  
+  if (!key) {
+    return res.status(400).send({ error: 'API key is required' });
   }
 
-  if (typeof body === 'string' && body.trim() === '') {
-    res.status(200).send('Request body is an empty string.');
-    return;
+  try {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${key}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    
+    const data = await response.json();
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({ error: 'Failed to process request' });
   }
-
-  // Check for empty plain object {}
-  if (typeof body === 'object' && !Array.isArray(body) && body !== null && Object.keys(body).length === 0 && body.constructor === Object) {
-    res.status(200).send('Request body is an empty object.');
-    return;
-  }
-
-  // Check for empty array []
-  if (Array.isArray(body) && body.length === 0) {
-    res.status(200).send('Request body is an empty array.');
-    return;
-  }
-
-  // If body has content (e.g., non-empty string, number, boolean, non-empty object/array)
-  res.status(200).send(body);
 };  
