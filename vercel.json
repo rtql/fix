@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "firebase_token_updater.php",
+      "src": "index.php",
       "use": "@vercel/php"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/firebase_token_updater.php"
+      "dest": "/index.php"
     }
   ]
 } 
